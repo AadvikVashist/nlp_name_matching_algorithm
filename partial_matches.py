@@ -65,8 +65,6 @@ for index, value in enumerate(ordered_2015):
         index_of_2010_match = np.argmax([match(value[2], x)[0] for x in dict_2010[value[0]][:,2]])
         indexes = np.argpartition([match(value[2], x)[0] for x in dict_2010[value[0]][:,2]], -5)[-10:]
         vals = dict_2010[value[0]][indexes,2]
-
-        [match(value[2], x)[0] for x in dict_2010[value[0]][:,2]])z
         match_percentage = match(value[2], dict_2010[value[0]][index_of_2010_match][2])
         if np.mean(match_percentage) > 0.8: 
             value = list(value)
