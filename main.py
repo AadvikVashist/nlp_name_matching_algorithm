@@ -13,6 +13,8 @@ matching_to = np.loadtxt('matches.csv',unpack = True,usecols=(0,1,2,3,4,5,6), dt
 def direct_matches(a,b):
     x = list(set(a).intersection(set(b)))
     return x
+def indirect_matches(a,b):
+    a = b
 matched_items = np.array(direct_matches(data[0],data[1])); matched_items = sorted(matched_items)
 matched_items = np.hstack((matched_items,np.zeros((len(matched_items)), dtype = np.int32)))
 matched_items = np.reshape(matched_items, (-1, 2), order = 'F')
