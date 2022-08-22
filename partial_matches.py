@@ -59,6 +59,8 @@ def match(s1,s2):
         else:
             letter_cutback = avg_length
         cum_ratio = natural_ratio- (letter_cutback)
+        if cum_ratio < 0:
+            cum_ratio = 0
         
         # try:
         #     cum_ratio = cum_ratio**(1/avg_length)
@@ -86,7 +88,13 @@ else:
     else:
         pick_up = True
         curr_index = 0
+        csvfileobj = open(save_location, mode = "a+", newline='')
 csvfileobject = csv.writer(csvfileobj)
+manual = input("manual movement?")
+if manual == "yes" or "y" in manual:
+    manual = True
+else:
+    manual = False
 for index, value in enumerate(ordered_2015):
     if pick_up:
         a = np.where(csv_file_array[:,2] == value[2])
@@ -104,12 +112,14 @@ for index, value in enumerate(ordered_2015):
         #     curr_index =index
     else:
         try:
-            curr_matched = [(index, x, *match(value[2], x)) for index,x in enumerate(dict_2010[value[0]][:,2])]
+            curr_matched = [(index, x[2], *match(value[2], x[2]),x ) for index,x in enumerate(dict_2010[value[0]])]
         except:
-            curr_matched = [(index, x, *match(value[2], x)) for index,x in enumerate(ordered_2010[:,2])]            
-        curr_matched = sorted(curr_matched, key=lambda x: x[2])
-        index_of_max_in_2010 = 0 #np.argmax(np.array(curr_matched)[:,2])
-        index_of_2010_match = curr_matched[index_of_max_in_2010][0]
+            curr_matched = [(index, x[2], *match(value[2], x[2]),x ) for index,x in enumerate(ordered_2010)]
+        if manual:        
+            curr_matched = sorted(curr_matched, key=lambda x: x[2],reverse= True)
+        else:
+            curr_matched = sorted(curr_matched, key=lambda x: x[3],reverse= True)
+        index_of_2010_match = curr_matched[0][0]
                 
             # index_of_2010_match = np.argmax()
             # indexes = np.argpartition([match(value[2], x)[0] for x in dict_2010[value[0]][:,2]], -10)[-10:]
@@ -117,15 +127,16 @@ for index, value in enumerate(ordered_2015):
             # if index_of_2010_match not in multi_matches:
             #   
             # assert False, ("bad")
-        match_percentage = curr_matched[index_of_max_in_2010][2::]
-        if np.mean(match_percentage) > 0.8: 
+        match_percentage = curr_matched[0][2:4]
+        print(match_percentage[1])
+        if match_percentage[1] > 0.8: 
             value = list(value)
-            value.extend(dict_2010[value[0]][curr_matched[index_of_max_in_2010][0]])
+            value.extend(curr_matched[0][4])
             value.extend(match_percentage)
             matched_list.append(value)
             csvfileobject.writerow(value)
             print(value)
-        elif np.mean(match_percentage) > 0.3:
+        elif manual and np.mean(match_percentage) > 0.2: 
             # print(f"{value[2]} and {dict_2010[value[0]][index_of_2010_match][2]}? Match percentage is {match_percentage[0]*100}% | {match_percentage[1]*100}%" )
             while True:
                 for i in range(5):
@@ -134,7 +145,7 @@ for index, value in enumerate(ordered_2015):
                 inp = inp.lower()
                 if "y" in inp or "0" in inp or inp == "":
                     value = list(value)
-                    value.extend(dict_2010[value[0]][curr_matched[index_of_max_in_2010][0]])
+                    value.extend(curr_matched[0][4])
                     value.extend(match_percentage)
                     matched_list.append(value)
                     csvfileobject.writerow(value)
@@ -150,7 +161,7 @@ for index, value in enumerate(ordered_2015):
                     try:
                         x = int(inp)
                         value = list(value)
-                        value.extend(dict_2010[value[0]][curr_matched[x][0]])
+                        value.extend(curr_matched[x][4])
                         value.extend(match_percentage)
                         matched_list.append(value)
                         csvfileobject.writerow(value)
