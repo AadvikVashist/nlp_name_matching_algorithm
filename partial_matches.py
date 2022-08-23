@@ -169,7 +169,9 @@ for index, value in enumerate(ordered_2015):
                         print("invalid input")
                         continue
         else:
-            continue
+            value = list(value)
+            matched_list.append(value)
+            csvfileobject.writerow(value)
 
 # close the file
 csvfileobj.close()
